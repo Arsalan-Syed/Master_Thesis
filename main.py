@@ -110,6 +110,7 @@ def evaluate(model_type, dataset, mode):
     print("PREC:", np.mean(prec_array))
     print("REC:", np.mean(rec_array))
     print("F1:", np.mean(f1_array))
+    print("")
 
 
 mode = "SMOTE"
