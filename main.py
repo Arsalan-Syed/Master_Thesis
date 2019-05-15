@@ -19,14 +19,8 @@ def _apply_transformation(df):
 def preprocess(df, mode):
     X = _apply_transformation(df)
     y = df["bug"]
-
-    if mode == "UNDER":
-        rus = RandomUnderSampler(random_state=42)
-        X, y = rus.fit_resample(X, y)
-    elif mode == "SMOTE":
-        sm = SMOTE(random_state=42)
-        X, y = sm.fit_resample(X, y)
-
+    X = np.array(X)
+    y = np.array(y)
     return X, y
 
 
@@ -73,6 +67,13 @@ def evaluate(model_type, dataset, mode):
         X_train, y_train = X[train_index], y[train_index]
         X_test, y_test = X[test_index], y[test_index]
 
+        if mode == "UNDER":
+            rus = RandomUnderSampler(random_state=42)
+            X_train, y_train = rus.fit_resample(X_train, y_train)
+        elif mode == "SMOTE":
+            sm = SMOTE(random_state=42)
+            X_train, y_train = sm.fit_resample(X_train, y_train)
+
         # Define our supervised, semi-supervised models
         classifier = get_base_model(model_type)
 
@@ -82,6 +83,16 @@ def evaluate(model_type, dataset, mode):
         y_pred = classifier.predict(X_test)
 
         tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+        zipped = list(zip(y_test, y_pred))
+        tp2 = len([a for a in zipped if a[0] == 1 and a[1] == 1])
+        tn2 = len([a for a in zipped if a[0] == 0 and a[1] == 0])
+        fp2 = len([a for a in zipped if a[0] == 0 and a[1] == 1])
+        fn2 = len([a for a in zipped if a[0] == 1 and a[1] == 0])
+
+        assert (tp == tp2)
+        assert (tn == tn2)
+        assert (fp == fp2)
+        assert (fn == fn2)
 
         accuracy = (tp + tn) / (tn + fp + fn + tp)
         precision = tp / (tp + fp)
