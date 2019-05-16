@@ -16,7 +16,7 @@ def _apply_transformation(df):
     return normalize_df
 
 
-def preprocess(df, mode):
+def preprocess(df):
     X = _apply_transformation(df)
     y = df["bug"]
     X = np.array(X)
@@ -53,7 +53,7 @@ def evaluate(model_type, dataset, mode):
     if mode == "RAW":
         X, y = raw(df)
     else:
-        X, y = preprocess(df, mode)
+        X, y = preprocess(df)
 
     kf = KFold(n_splits=10, shuffle=True, random_state=42)
     kf.get_n_splits(X)
@@ -83,16 +83,6 @@ def evaluate(model_type, dataset, mode):
         y_pred = classifier.predict(X_test)
 
         tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
-        zipped = list(zip(y_test, y_pred))
-        tp2 = len([a for a in zipped if a[0] == 1 and a[1] == 1])
-        tn2 = len([a for a in zipped if a[0] == 0 and a[1] == 0])
-        fp2 = len([a for a in zipped if a[0] == 0 and a[1] == 1])
-        fn2 = len([a for a in zipped if a[0] == 1 and a[1] == 0])
-
-        assert (tp == tp2)
-        assert (tn == tn2)
-        assert (fp == fp2)
-        assert (fn == fn2)
 
         accuracy = (tp + tn) / (tn + fp + fn + tp)
         precision = tp / (tp + fp)
@@ -104,20 +94,37 @@ def evaluate(model_type, dataset, mode):
         rec_array.append(recall)
         f1_array.append(f1)
 
-    print("_________________________")
-    print("Model Type:", model_type)
-    print("ACC:", np.mean(acc_array))
-    print("PREC:", np.mean(prec_array))
-    print("REC:", np.mean(rec_array))
-    print("F1:", np.mean(f1_array))
+    row = {"Accuracy": np.mean(acc_array),
+           "Precision": np.mean(prec_array),
+           "Recall": np.mean(rec_array),
+           "F1": np.mean(f1_array),
+           "Dataset": dataset,
+           "Model": model_type,
+           "Mode": mode
+           }
+    print(row)
     print("")
+    return row
 
 
-mode = "SMOTE"
+modes = ["RAW", "UNDER", "SMOTE"]
+datasets = ["bugzilla.csv", "columba.csv", "jdt.csv", "mozilla.csv", "platform.csv", "postgres.csv"]
+models = ["RF", "XGB"]
 
-for dataset in ["bugzilla.csv", "columba.csv", "jdt.csv",
-                "mozilla.csv", "platform.csv", "postgres.csv"]:
+def run():
+    rows = []
 
-    print("DATASET:", dataset)
-    for model_type in ["RF"]:
-        evaluate(model_type, "datasets/%s" % dataset, mode)
+    for mode in modes:
+
+        for dataset in datasets:
+
+            for model_type in models:
+                row = evaluate(model_type, "datasets/%s" % dataset, mode)
+                rows.append(row)
+
+    df = pd.DataFrame(rows)
+    df = df[["Precision", "Recall", "F1", "Dataset", "Mode"]]
+    df.to_csv("results.csv")
+
+
+run()
