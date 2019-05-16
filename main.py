@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.metrics import confusion_matrix
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
-
+from xgboost import XGBClassifier
 
 def _apply_transformation(df):
     normalize_df = df.drop(["transactionid", "commitdate", "fix", "bug"], axis=1)
