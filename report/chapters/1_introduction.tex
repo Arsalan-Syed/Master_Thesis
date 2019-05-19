@@ -1,0 +1,54 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Introduction}
+
+%Introduce the problem
+A universal issue that affects software developers is the presence of software bugs. Bugs in software can be defined as unintentional errors that cause software to perform incorrectly. Defects in software can have a serious financial impact on businesses and
+reduce the time available for developers to create new features. Bugs in software can also introduce security vulnerabilities that could lead to the leakage of user data as well a loss of reputation \cite{briski2008minimizing}. There have been several large-scale incidents in the past involving defective software. For example, the Mars Climate Orbiter, a space probe launched by NASA in 1998 crashed on Mars due to a bug which failed to use metric measurements instead of imperial units \cite{sauser2009projects}. Another example is the Heartbleed bug, a security vulnerability in the OpenSSL protocol which could potentially expose confidential information such as passwords and credit card numbers \cite{durumeric2014matter}. In 1994, the Pentium FDIV bug incident caused Intel processors to produce faulty values when diving floating point values which lead to a mass recall of defective processors \cite{pratt1995anatomy}. These examples highlight some of the large scale impacts that bugs can have and it can be very challenging to identify the vulnerabilities in the first place. 
+
+A study by IBM found that the associated cost with resolving a bug in software increases depending on what phase in the development lifecycle the bug was identified \cite{briski2008minimizing}. Moreover, software bugs that are discovered in the production phase are more costly because they can directly affect customers as opposed to bugs that occur early on in. Therefore there is a justification for being able to detect bugs as early as possible. 
+
+%What is currently being done today and limitations
+Software developers identify bugs by performing regular testing reduce their likelihood by improving development practices. For example, unit testing involves verifying the validity of individual methods within code and these tests and can be run every time a new build is created. Development practices have also shifted from traditional waterfall methods to Agile methodologies in order to keep up with the fast pace of development cycles. Agile methodologies allow for more frequent testing as well as code reviews before integrating new features to the main product. However, a challenge with identifying bugs is that as a project grows in size, it becomes more complex to maintain. It becomes impractical to try out all possible executions of a program and running tests can become time consuming. 
+
+%How can we solve it today
+To assist developers with identifying bugs, recent research has suggested the usage of software defect prediction models \cite{kamei2013large}. These models aim to identify regions in code that are most vulnerable to defects. Using these models, developers would be able to prioritize their testing efforts and receive continuous feedback in an automated fashion. The proposed benefits of such models are reduced time spent when reviewing code and being able to provide immediate feedback to a developer once a change is made.
+
+%Using machine learning to assist us
+In order to create such a defect prediction model, one could leverage the capabilities of machine learning. Machine learning is the field of study concerned with algorithms that can learn from historical samples in order to predict values for unseen samples. Although machine learning has been around since the 60s, its viability has grown immensely in recent years due to advances in hardware, easy to implement open source models and a large availability of data. Machine learning algorithms are able to spot complex patterns in data to solve various tasks such as facial recognition or translation of text and are now being tested out on the task of identifying bugs \cite{nayrolles2018clever}. In the context of identifying risky portions of code, one could use a supervised learning approach. With this technique, an algorithm is shown examples of risky and clean files and aims to predict whether a new file contains a defect. 
+
+%Just-in-time defect prediction
+A proposed method for identifying risky code is Just-in-time (JIT) defect prediction. Unlike previous works which aim to make predictions at the file-level, JIT defect prediction aims to predict individual commits as being risky or not \cite{kamei2013large}. The justification for these models is that commits tend to be smaller to review than files which can make the reviewing process simpler. Also, a problem with identifying risky files is that files can have multiple authors so it is unclear as to who should be assigned to resolve the issue. Commits on the other hand only have one author so one could assign the commit's author to resolve any potential issues. Finally, JIT prediction models can make predictions rapidly because the metrics used in the model can be extracted as soon as the commit as made. 
+
+%SZZ
+When applying supervised learning techniques for this particular task, labelled data is required. The problem is that the majority of commits do not have any labels that indicate whether or not they caused a defect. In order to automatically label commits as \textit{risky} or \textit{not risky}, the Śliwerski Zimmermann Zeller (SZZ) algorithm can be used to obtain large datasets for building defect prediction models \cite{sliwerski2005changes}. However, a limitation of the original algorithm is that it requires the project being analyzed to have a bug tracking database that confirms if certain commits resolve bugs. Some projects might not have this database or if they do, the information it stores might not contain data for a commit by commit basis. Instead, one could rely on the approximate SZZ (ASZZ) algorithm which removes this restriction. 
+
+%Semi-supervised learning
+Since labelling commits can be quite time consuming, it would be useful to have a technique that could leverage the information contained in unlabelled commits. Semi-supervised learning is an example of a subset of machine learning algorithms that can train on both labelled and unlabelled data \cite{zhu2005semi}. The self-training algorithm is a simple semi-supervised technique that can be applied to any classification method that outputs probabilities for its labels \cite{zhu2007semi}. 
+
+%Contributions of this work
+ performing a qualitative study to  as well as performing a case study to investigate the viability of JIT defect prediction models in practice.
+
+
+\section{Research Questions}
+
+The purpose of this thesis is to investigate the viability of the self-training algorithm for software risk prediction. It will also perform a qualitative study to understand how software developers identify and resolve bugs. Finally, a case study will be performed to see how practical JIT defect prediction models are in an industrial environment such as King \footnote{https://king.com/}, a game development company. The research questions that will be answered are:
+
+\begin{itemize}
+  \item \textbf{RQ1:} When comparing the semi-supervised method of self-training with supervised learning techniques, how well does the semi-supervised approach perform when applied to Just-in-time defect predictions?
+  \item \textbf{RQ2:} How do software developers identify bugs and what are some characteristics of code that contains a bug?
+  \item \textbf{RQ3:} When provided with a Just-in-time defect prediction model, how accurate are the model's predictions according to software developers ? 
+\end{itemize}
+
+\section{Scope}
+
+This project is focused on Just-in-time defect prediction models, models which predict at the commit level and only rely on commit metadata rather than analyzing the source code. The collection of new data will be done using the approximate SZZ algorithm and using a smaller set of features than those typically found in datasets for JIT defect prediction. 
+
+\section{Outline of Report}
+Chapter 2 provides relevant background theory on the field of software defect prediction as well as achievements in related work. Chapter 3 describes the technical contribution that was created for this thesis project. Chapter 4 covers the methodology utilized for answering the specified research questions. Chapter 5 presents the results of these experiments and finally, chapter 6 will analyze and discuss the key findings.
+
+\end{document}
+
+%contribution section

@@ -1,0 +1,578 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Results} \label{chapter:results}
+
+This chapter presents the results of each experiment proposed in chapter \ref{chapter:methodology}. 
+
+\section{Research Question 1 Results}
+
+For this section, the result of running the evaluation algorithm (see algorithm \ref{algorithm:evaluation}). All metrics are expressed as real numbers between 0 and 1. For some of the experiments, the performance of a random model is supplied as a baseline in column RAND. For the purpose of confidentiality, the precision and F1-score of random models are not included for commercial project as the percentage of risky commits can be derived using these values. 
+
+\subsection{Experimenting with Various Models}\label{subsection:experiment1}
+
+For the performance metrics accuracy, precision, recall and F1 score, a table was obtained which highlights each model's performance for every dataset. Each table cell has two values, one for the supervised model and another for its self-trained counterpart. The values in bold are those where the self-training algorithm made a statistically significant improvement over its respective base classifier. 
+
+\subsubsection{Accuracy}
+
+\begin{table}[H] 
+\centering 
+\begin{tabular}{|p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}|} 
+    \hline 
+    Project &LR & RF & ADA & XGB & KNN & RAND\\ 
+    \hline \hline 
+    Bugzilla& 0.669 \newline 0.660 & 0.705 \newline 0.714 & 0.694 \newline 0.690 & 0.706 \newline 0.705 & 0.628 \newline 0.616 & 0.501\\ 
+    \hline 
+    Columba& 0.684 \newline 0.687 & 0.690 \newline 0.685 & 0.672 \newline 0.669 & 0.685 \newline 0.686 & 0.620 \newline 0.635 & 0.517\\    \hline 
+    Jdt& 0.678 \newline 0.682 & 0.678 \newline 0.670 & 0.692 \newline 0.692 & 0.699 \newline 0.676 & 0.638 \newline \textbf{0.663} & 0.504\\ 
+    \hline 
+    Mozilla& 0.754 \newline \textbf{0.777} & 0.763 \newline 0.769 & 0.751 \newline 0.750 & 0.765 \newline 0.749 & 0.643 \newline 0.643 & 0.500\\ 
+    \hline 
+    Platform& 0.670 \newline 0.654 & 0.705 \newline 0.701 & 0.694 \newline 0.693 & 0.703 \newline 0.665 & 0.634 \newline 0.642 & 0.505\\ 
+    \hline 
+    Postgres& 0.746 \newline 0.751 & 0.733 \newline 0.743 & 0.738 \newline 0.739 & 0.751 \newline 0.745 & 0.670 \newline \textbf{0.699} & 0.500\\ 
+    \hline 
+    C1& 0.783 \newline \textbf{0.798} & 0.835 \newline 0.837 & 0.842 \newline 0.842 & 0.845 \newline 0.842 & 0.794 \newline 0.801 & 0.500\\ 
+    \hline 
+    C2& 0.785 \newline 0.787 & 0.833 \newline 0.837 & 0.837 \newline 0.837 & 0.842 \newline 0.841 & 0.794 \newline \textbf{0.802} & 0.502\\ 
+    \hline 
+    C3& 0.788 \newline 0.793 & 0.830 \newline \textbf{0.835} & 0.841 \newline 0.841 & 0.843 \newline 0.842 & 0.794 \newline \textbf{0.800} & 0.497\\ 
+    \hline 
+    Average& 0.729 \newline \textbf{0.732} & 0.752 \newline  0.755 & 0.751 \newline 0.750  & 0.760 \newline 0.750 & 0.691 \newline \textbf{0.700} &0.503 \\ 
+    \hline 
+\end{tabular} 
+\caption{Accuracy for various models and datasets} 
+\label{table:exp1_Accuracy} 
+\end{table} 
+
+Table \ref{table:exp1_Accuracy} shows that the choice of classification algorithm make a significant impact on the accuracy. K-nearest neighbours consistently underperforms as opposed to the other models. The best model overall is XGBoost which outperforms other classifiers in the majority of cases. When it comes to self-training performance, the self-training algorithm does not appear to improve performance when both classifiers are provided the exact same amount of labelled data. K-nearest neighbours has the most benefit from self-training as seen for the JDT, Postgres, C1 and C3 projects. However, even with this increase, KNN is performing worse than even logistic regression. In most cases, the accuracy due to self-training is similar or slightly lower than the base performance. The accuracy overall appears to be higher on the commercial projects, possibly because the class imbalance is lower for those projects.
+
+\subsubsection{Precision}
+
+\begin{table}[H] 
+ \centering 
+ \begin{tabular}{|p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}|} 
+ \hline 
+Project &LR & RF & ADA & XGB & KNN & RAND\\ 
+\hline \hline 
+Bugzilla& 0.539 \newline 0.531 & 0.583 \newline 0.602 & 0.568 \newline 0.565 & 0.586 \newline 0.592 & 0.497 \newline 0.485 & 0.372 \\ 
+\hline 
+Columba& 0.490 \newline 0.496 & 0.495 \newline 0.491 & 0.475 \newline 0.471 & 0.493 \newline 0.495 & 0.421 \newline 0.434 & 0.312\\ 
+\hline 
+Jdt& 0.260 \newline 0.261 & 0.265 \newline 0.258 & 0.272 \newline 0.272 & 0.281 \newline 0.266 & 0.224 \newline \textbf{0.239} & 0.143\\ 
+\hline 
+Mozilla& 0.129 \newline 0.137 & 0.148 \newline 0.146 & 0.136 \newline 0.136 & 0.149 \newline 0.137 & 0.095 \newline 0.097 & 0.052\\ 
+\hline 
+Platform& 0.263 \newline 0.256 & 0.294 \newline 0.290 & 0.284 \newline 0.284 & 0.296 \newline 0.269 & 0.236 \newline \textbf{0.243} & 0.147\\ 
+\hline 
+Postgres& 0.497 \newline 0.503 & 0.478 \newline 0.491 & 0.485 \newline 0.486 & 0.503 \newline 0.495 & 0.399 \newline \textbf{0.429} & 0.252\\ 
+\hline 
+C1& 0.532 \newline \textbf{0.563} & 0.639 \newline 0.641 & 0.651 \newline 0.651 & 0.657 \newline 0.651 & 0.566 \newline 0.579 &  \\ 
+\hline 
+C2& 0.495 \newline 0.499 & 0.605 \newline 0.613 & 0.614 \newline 0.614 & 0.623 \newline 0.623 & 0.533 \newline \textbf{0.548} &  \\ 
+\hline 
+C3& 0.565 \newline \textbf{0.579} & 0.644 \newline \textbf{0.653} & 0.663 \newline 0.663 & 0.667 \newline 0.666 & 0.583 \newline \textbf{0.594} & \\ 
+\hline 
+Average& 0.419 \newline 0.425  & 0.461 \newline 0.465  & 0.461 \newline 0.460 & 0.473 \newline 0.466 & 0.395\newline 0.405 & 0.247\\
+\hline 
+ \end{tabular} 
+ \caption{Precision for various models and datasets} 
+ \label{table:exp1_Precision} 
+ \end{table} 
+
+
+In the case of precision, table \ref{table:exp1_Precision} shows a similar to situation as table \ref{table:exp1_Accuracy} for self-training performance. The self-training algorithm does not provide an improvement in general cases but does appear to be providing improvements for the logistic regression and K-nearest neighbours. XGBoost once again outperforms other classifiers when considering base performance. 
+
+
+\subsubsection{Recall}
+
+\begin{table}[H] 
+\centering 
+\begin{tabular}{|p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}|} 
+    \hline 
+    Project &LR & RF & ADA & XGB & KNN & RAND\\ 
+    \hline \hline 
+    Bugzilla& 0.659 \newline 0.652 & 0.690 \newline 0.653 & 0.695 \newline 0.679 & 0.697 \newline 0.667 & 0.656 \newline 0.686 & 0.508\\ 
+    \hline 
+    Columba& 0.644 \newline 0.645 & 0.682 \newline 0.696 & 0.648 \newline 0.647 & 0.694 \newline 0.680 & 0.636 \newline 0.624 & 0.530\\ 
+    \hline 
+    Jdt& 0.667 \newline 0.656 & 0.695 \newline 0.690 & 0.677 \newline 0.677 & 0.702 \newline 0.703 & 0.616 \newline 0.613 & 0.508\\ 
+    \hline 
+    Mozilla& 0.639 \newline 0.610 & 0.738 \newline 0.703 & 0.702 \newline 0.702 & 0.740 \newline 0.715 & 0.685 \newline 0.692 & 0.504\\ 
+    \hline 
+    Platform& 0.691 \newline \textbf{0.707} & 0.718 \newline 0.713 & 0.713 \newline 0.715 & 0.738 \newline 0.740 & 0.665 \newline \textbf{0.680} & 0.500\\ 
+    \hline 
+    Postgres& 0.646 \newline 0.618 & 0.711 \newline 0.684 & 0.702 \newline 0.703 & 0.707 \newline 0.685 & 0.629 \newline 0.590 & 0.512\\ 
+    \hline 
+    C1& 0.485 \newline \textbf{0.571} & 0.778 \newline 0.771 & 0.804 \newline 0.804 & 0.789 \newline 0.783 & 0.675 \newline \textbf{0.701} & 0.499\\ 
+    \hline 
+    C2& 0.477 \newline 0.480 & 0.741 \newline 0.746 & 0.752 \newline 0.752 & 0.758 \newline 0.767 & 0.652 \newline \textbf{0.677} & 0.500\\ 
+    \hline 
+    C3& 0.569 \newline \textbf{0.669} & 0.771 \newline \textbf{0.797} & 0.806 \newline 0.806 & 0.813 \newline 0.821 & 0.703 \newline \textbf{0.725} &0.497\\ 
+    \hline 
+    Average& 0.609\newline \textbf{0.623} & 0.725 \newline 0.717 & 0.722 \newline 0.721 & 0.738 \newline 0.729 & 0.657 \newline \textbf{0.665} &0.507\\ 
+    \hline 
+\end{tabular} 
+\caption{Recall for various models and datasets} 
+\label{table:exp1_Recall} 
+\end{table} 
+
+For the commercial projects, there is a large difference between logistic regression's performance and all other classifiers. Take for example the C1 project where logistic regression only has a recall of 0.485 whereas the recall for tree based methods (RF, ADA and XGB) varies from 0.778 to 0.804. Again, XGBoost appears to do the best overall at achieving higher rates of recall. The tables show that in most cases,the recall of these classifiers is higher than the precision, however it is possible to increase the precision if one changes the probability threshold to a value other than 0.5.
+
+
+\subsubsection{F1 Score}
+
+\begin{table}[H] 
+ \centering 
+ \begin{tabular}{|p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}p{15mm}|} 
+ \hline 
+ Project &LR & RF & ADA & XGB & KNN & RAND\\ 
+ \hline \hline 
+ Bugzilla& 0.592 \newline 0.584 & 0.631 \newline 0.625 & 0.624 \newline 0.615 & 0.635 \newline 0.624 & 0.564 \newline 0.566 & 0.423\\ 
+ \hline 
+ Columba& 0.554 \newline 0.557 & 0.572 \newline 0.573 & 0.547 \newline 0.544 & 0.573 \newline 0.567 & 0.505 \newline 0.509 & 0.385\\ 
+ \hline 
+ Jdt& 0.373 \newline 0.372 & 0.383 \newline 0.375 & 0.387 \newline 0.387 & 0.401 \newline 0.385 & 0.328 \newline 0.343 & 0.221\\ 
+ \hline 
+ Mozilla& 0.215 \newline 0.223 & 0.246 \newline 0.242 & 0.228 \newline 0.227 & 0.248 \newline 0.230 & 0.168 \newline 0.169 & 0.094\\ 
+ \hline 
+ Platform& 0.381 \newline 0.376 & 0.417 \newline 0.412 & 0.406 \newline 0.406 & 0.422 \newline 0.395 & 0.348 \newline \textbf{0.358} & 0.226\\ 
+ \hline 
+ Postgres& 0.561 \newline 0.554 & 0.571 \newline 0.571 & 0.573 \newline 0.574 & 0.587 \newline 0.574 & 0.488 \newline 0.496 & 0.337\\ 
+ \hline 
+ C1& 0.507 \newline \textbf{0.567} & 0.702 \newline 0.700 & 0.720 \newline 0.720 & 0.717 \newline 0.711 & 0.615 \newline \textbf{0.634}  & \\ 
+\hline 
+C2& 0.486 \newline 0.489 & 0.666 \newline 0.673 & 0.676 \newline 0.676 & 0.684 \newline 0.688 & 0.587 \newline \textbf{0.606} &\\ \hline 
+C3& 0.567 \newline \textbf{0.621} & 0.702 \newline \textbf{0.718} & 0.727 \newline 0.727 & 0.733 \newline 0.735 & 0.637 \newline \textbf{0.653} & \\ 
+\hline 
+Average& 0.471 \newline \textbf{0.483} & 0.543 \newline 0.543 & 0.543 \newline 0.542  & 0.556 \newline 0.545 & 0.471 \newline \textbf{0.482}  & 0.318\\ 
+ \hline 
+ \end{tabular} 
+ \caption{F1 for various models and datasets} 
+ \label{table:exp1_F1} 
+ \end{table} 
+ 
+The F1 score shows an overall performance for the models and what is noticeable is that the commercial projects have much higher F1 scores (close to 0.7 for RF, ADA and XGB). 
+
+\subsection{Varying the Percentage of Labelled Data}
+
+This experiment was carried out on two datasets, C1 and JDT (see Table \ref{table:allData}). The purpose of repeating this experiment for a these two projects is to allow for reproducibility of results since the C1 dataset cannot be released publicly. It can also show any differences between an open and a closed source project. Note that the reconstruction precision and reconstruction recall are computed for the target class \textit{risky}. There are two graphs for each metric and each graph shows the performance of a base model and three models trained using the self-training algorithm but with different confidence levels. When the fraction of labelled data is 1.0, all four models are identical as there is no unlabelled data to train on. For graphs showing reconstruction metrics, only the three self-trained models are shown as these metrics only apply to semi-supervised models.
+
+\newcommand{\rqgraphs}[4]{
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.75\textwidth}
+            \includegraphics[width=\textwidth]{#1}
+            \caption{#3 on C1}
+            \label{fig:#4}
+        \end{subfigure}
+        
+        \begin{subfigure}[b]{0.75\textwidth}
+            \includegraphics[width=\textwidth]{#2}
+            \caption{#3 on JDT}
+            \label{fig:#4JDT}
+        \end{subfigure}
+    
+        \caption{#3 when varying fraction of labelled data}
+        \label{fig:#4Both}
+    \end{figure}
+}
+
+\subsubsection{Accuracy}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/acc.png}{images/Results/RQ1/Exp2/JDT/acc.png}{Accuracy}{rq1exp2accuracy}
+
+Figure \ref{fig:rq1exp2accuracy} shows that the accuracy of all four models is rather similar and the models do not statistically outperform each other. What is of interest is that the self-trained classifiers achieve similar accuracy when the portion of labelled data is 10\% (hence 90\% being unlabelled) when compared to the accuracy at 100\%. Unlike the C1 project (see figure \ref{fig:rq1exp2accuracy}), the accuracy for the JDT project (figure \ref{fig:rq1exp2accuracyJDT}) is affected more when there is less labelled data. However, at around 0.3, the performance becomes similar once more.
+
+\subsubsection{Precision}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/prec.png}{images/Results/RQ1/Exp2/JDT/prec.png}{Precision}{rq1exp2precision}
+
+For both projects, the precision for all four models in figure \ref{fig:rq1exp2precision} and figure \ref{fig:rq1exp2precisionJDT} appear to have a similar graph to their accuracy graphs (see \ref{fig:rq1exp2accuracy},\ref{fig:rq1exp2accuracyJDT}) with a shift in the y-axis. All four models achieve similar precision and the precision at lower fractions of labelled data are close to those when using the maximum amount of labelled data.
+
+\subsubsection{Recall}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/rec.png}{images/Results/RQ1/Exp2/JDT/rec.png}{Recall}{rq1exp2recall}
+
+Unlike the case of accuracy and precision, figure \ref{fig:rq1exp2recall} and figure \ref{fig:rq1exp2recallJDT} show that the recall of the self-trained classifiers is much lower than that of the base classifier when the fraction of labelled data is between 0.1 and 0.3. However after 0.3, the classifiers recover and achieve similar performance. 
+
+\subsubsection{Reconstruction Accuracy}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/recon_acc.png}{images/Results/RQ1/Exp2/JDT/recon_acc.png}{Reconstruction accuracy}{rq1exp2reconstAccuracy}
+
+It is evident from figure \ref{fig:rq1exp2reconstAccuracyBoth} that a higher confidence threshold corresponds to a better reconstruction accuracy. This is because the self-training algorithm is more strict on what can be added to the training set. Therefore a higher confidence is proportional to higher reconstruction accuracy. Unlike in figure \ref{fig:rq1exp2reconstAccuracy}, figure \ref{fig:rq1exp2reconstAccuracyJDT} shows more variance and distance between graphs of the models. 
+
+\subsubsection{Reconstruction Precision}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/recon_prec.png}{images/Results/RQ1/Exp2/JDT/recon_prec.png}{Reconstruction precision}{rq1exp2reconstprecision}
+
+Figure \ref{fig:rq1exp2reconstprecision} shows that a higher confidence value does not always correspond to a higher reconstruction precision. Here, the reconstruction precision does not follow a strict ordering depending on confidence because a confidence of 0.85 does better than both 0.80 and 0.90. This is not the case for figure \ref{fig:rq1exp2reconstprecisionJDT} where a clear ordering is visible.
+
+\subsubsection{Reconstruction Recall}
+
+\rqgraphs{images/Results/RQ1/Exp2/Myling/recon_rec.png}{images/Results/RQ1/Exp2/JDT/recon_rec.png}{Reconstruction recall}{rq1exp2reconstRecall}
+
+With reconstruction recall, there is a much larger gap between each model. Here, the model with a confidence of 0.80 does best and a confidence of 0.90 does the worst. 
+
+\subsection{Varying the Iterations for Self-Training}
+
+\newcommand{\rqgraphsIter}[4]{
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.75\textwidth}
+            \includegraphics[width=\textwidth]{#1}
+            \caption{#3 on C1}
+            \label{fig:#4}
+        \end{subfigure}
+        
+        \begin{subfigure}[b]{0.75\textwidth}
+            \includegraphics[width=\textwidth]{#2}
+            \caption{#3 on JDT}
+            \label{fig:#4JDT}
+        \end{subfigure}
+    
+        \caption{#3 when varying iterations for self-training algorithm}
+        \label{fig:#4Both}
+    \end{figure}
+}
+
+
+\subsubsection{Accuracy}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/acc.png}{images/Results/RQ1/Exp3/JDT/acc.png}{Accuracy}{rq1exp3Accuracy}
+
+Figures \ref{fig:rq1exp3Accuracy} shows that increasing the number of iterations does not appear to be making significant changes towards accuracy. This could indicate that the algorithm fails to add new unlabelled data to its labelled training data after a certain point. 
+
+
+\subsubsection{Precision}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/prec.png}{images/Results/RQ1/Exp3/JDT/prec.png}{Precision}{rq1exp3precision}
+
+Similar to the graphs for accuracy, the precision does not appear to be affected by the number of iterations. 
+
+\subsubsection{Recall}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/rec.png}{images/Results/RQ1/Exp3/JDT/rec.png}{Recall}{rq1exp3recall}
+
+
+\subsubsection{Reconstruction Accuracy}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/recon_acc.png}{images/Results/RQ1/Exp3/JDT/recon_acc.png}{Reconstruction accuracy}{rq1exp3reconstAccuracy}
+
+The reconstruction accuracy in \ref{fig:rq1exp3reconstAccuracy} appears to have very little variance unlike what is being shown in figure \ref{fig:rq1exp3reconstAccuracyJDT}. The reconstruction recall appears to decrease and then increase again as more iterations occur implying that more iterations will not necessarily lead to better predictions for the self-training algorithm. 
+
+\subsubsection{Reconstruction Precision}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/recon_prec.png}{images/Results/RQ1/Exp3/JDT/recon_prec.png}{Reconstruction precision}{rq1exp3reconstprecision}
+
+
+\subsubsection{Reconstruction Recall}
+
+\rqgraphsIter{images/Results/RQ1/Exp3/Myling/recon_rec.png}{images/Results/RQ1/Exp3/JDT/recon_rec.png}{Reconstruction recall}{rq1exp3reconstRecall}
+
+The reconstruction recall in figure \ref{fig:rq1exp3reconstRecall} varies a lot, ranging from 0.77 to 0.94. 
+
+\subsection{Comparing to past results}
+
+The tables below provide a comparison between the performance of random forest and XGBoost models without using self-training. The values for the \textbf{Kamei} and \textbf{Deeper} baselines were obtained from the paper \textit{Deep Learning for Just-In-Time Defect Prediction} \cite{yang2015deep} and the values for \textbf{TLEL} were obtained from \textit{TLEL: A two-layer ensemble learning approach for just-in-time defect prediction} \cite{yang2017tlel}.
+
+\begin{table}[H] 
+\centering 
+\begin{tabular}{|c c c c c c|} 
+\hline 
+Project  & Kamei& Deeper & TLEL   & RF & XGB \\ 
+\hline \hline 
+Bugzilla & 0.548 & 0.556 & 0.624 & 0.583 & 0.586\\ 
+\hline 
+Columba  & 0.487 & 0.469 & 0.512 & 0.495 & 0.493\\ 
+\hline 
+JDT      & 0.249 & 0.260 & 0.293 & 0.265 & 0.281\\ 
+\hline 
+Mozilla  & 0.124 & 0.132 & 0.158 & 0.148 & 0.149\\ 
+\hline 
+Platform & 0.232 & 0.264 & 0.314 & 0.294 & 0.296\\ 
+\hline 
+Postgres & 0.504 & 0.457 & 0.499 & 0.478 & 0.503\\ 
+\hline 
+Average  & 0.357 & 0.356 & 0.400 & 0.377 & 0.385\\ 
+\hline 
+\end{tabular} 
+\caption{Comparing precision to past results} 
+\label{table:exp4_Precision} 
+\end{table} 
+
+
+
+\begin{table}[H] 
+\centering 
+\begin{tabular}{|c c c c c c|} 
+\hline 
+Project & Kamei & Deeper & TLEL & RF & XGB\\ 
+\hline \hline 
+Bugzilla & 0.702 & 0.721 & 0.7592 & 0.690 & 0.697\\ 
+\hline 
+Columba & 0.649 & 0.670 & 0.743 & 0.682 & 0.694\\ 
+\hline 
+JDT & 0.661 & 0.688  & 0.735 & 0.695 & 0.702\\ 
+\hline 
+Mozilla & 0.608 & 0.682  & 0.778 & 0.738 & 0.740\\ 
+\hline 
+Platform & 0.709 & 0.700 & 0.775 & 0.718 & 0.738\\ 
+\hline 
+Postgres & 0.602 & 0.680  & 0.770 & 0.711 & 0.707\\ 
+\hline 
+Average & 0.655 & 0.690  & 0.760  & 0.706 & 0.713 \\ 
+\hline 
+\end{tabular} 
+\caption{Comparing recall to past results} 
+\label{table:exp4_Recall} 
+\end{table} 
+
+
+\begin{table}[H] 
+\centering 
+\begin{tabular}{|c c c c c c|} 
+\hline 
+Project & Kamei & Deeper & TLEL & RF & XGB\\ 
+\hline \hline 
+Bugzilla & 0.615 & 0.626 & 0.685 & 0.631 & 0.635 \\ 
+\hline 
+Columba & 0.555 & 0.549 & 0.607 & 0.572 & 0.573\\ 
+\hline 
+JDT & 0.362 & 0.377 & 0.419 & 0.383 & 0.401 \\ 
+\hline 
+Mozilla & 0.206 & 0.221 & 0.263 & 0.246 & 0.248\\ 
+\hline 
+Platform & 0.350 & 0.383 & 0.447 & 0.417 & 0.422\\ 
+\hline 
+Postgres & 0.548 & 0.546 & 0.605 & 0.571 & 0.587\\ 
+\hline 
+Average & 0.439 & 0.451 & 0.504 & 0.470 & 0.478\\ 
+\hline 
+\end{tabular} 
+\caption{Comparing F1 score to past results} 
+\label{table:exp4_F1} 
+\end{table} 
+
+
+\section{Research Question 2 Results}
+
+For this research question, the conducted interviews asked 10 participants a total of 4 questions. All responses are presented in tables such that there is a table for each question asked and each table row contains the response provided by each developer. For each question asked, the results are also summarized as bar plots where the independent axis contains categories for the responses and the dependent axis is the number of responses that associate with this category. Note that a response can fall into more than one category and that the available categories cover all of the responses. Any table row which contains the value \textit{N/A} indicates no applicable response was available for this question. The $i^{th}$ interviewee's response is recorded in the $i^{th}$ row of each table.
+
+\subsection{Question 1: Identifying the Origin of Bugs}
+
+\textit{Once you realize something is faulty with your software, how do you go about locating the origin of the bug ?}
+
+\begin{table}[H]
+\centering
+    \begin{tabular}{|p{15cm}|}
+        \hline
+        \textbf{Responses}\\ 
+        \hline\hline
+        Approach the developers working on the particular project with bugs and see if they know what is wrong. Alternative, I try and guess myself what the cause is. The best way would be to inspect the code.\\
+        \hline
+        Once something breaks, open up Jenkins and investigate the log which shows any detected failures with the code\\
+        \hline
+        When a bug occurs in a live product, rely on assistance from the QA team\\
+        \hline
+        Usually look at the crash logs to see what caused an issue or reach out to other people who may known what's gone wrong. What's tricky is finding bugs when the game runs without crashing but the bugs produce unexpected behaviours. It's more challenging when you don't know which exact system was affected and need a way to narrow it down.\\
+        \hline
+        Use automation testing and try to see when a buggy commit first appeared. Do this by testing every commit with unit tests\\
+        \hline
+        Try to reproduce the bug and see what part of the code it belongs to. Use breakpoints and debugging to see why error occurs.\\
+        \hline
+        Use lots of logs statements when debugging before and after where a potential error or crash occurs\\
+        \hline
+        Try to reproduce the bug using test cases. Also, use debugging to step through the code.\\
+        \hline
+        Go through logs to see if the software is behaving normally. I also look at the stack trace as well as previous commits and compare the difference using \texttt{git diff}. It's harder to detect a bug if no crash occurs and the software appears to be running normally. \\
+        \hline
+        I tend to use the debugger and look at stack traces to see what's wrong. If the program has incorrect behaviour but doesn't crash, I check that individual variables have the correct values. \\
+        \hline
+    \end{tabular}
+\caption{Responses to question 1}
+\label{table:rq2Table1}
+\end{table}
+
+The four categories of responses are \textit{reach out to other  members, inspect logs, detect bug in unit testing} and \textit{manually inspect code with debugger}. The category \textit{reach out to other members} considers responses where verbal communication was required between colleagues, this can include talking to people who do not work with software development. The category \textit{inspect logs} includes looking at stack traces other types of logs. The category \textit{detect bug in unit testing} is for responses which involved finding bugs through test cases. The category \textit{manually inspect code with debugger} is for explicitly setting breakpoints within code and using a debugging tool. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{images/Results/RQ2/RQ2_question_1.png}
+    \caption{Responses for Question 1 categorized}
+    \label{fig:rq2Image1}
+\end{figure}
+
+\subsection{Question 2: Tools Used to Identify and Reduce Bugs}
+
+\textit{What existing tools do you use that help you mitigate the risk of introducing bugs or to help detect bugs?}
+
+\begin{table}[H]
+\centering
+    \begin{tabular}{|p{15cm}|}
+        \hline
+        \textbf{Responses}\\ 
+        \hline\hline
+        I use Trello for planning and communication to ensure people are coordinated\\
+        \hline
+        Test environments which try to replicate the environment that a live system uses without having to make changes to the live system. Allows you to see if software is working well for various releases and dependency versions\\
+        \hline
+        Rely on automated unit testing and crash tools that show a stack trace of function calls that failed. I also rely on analytic tools which show the modules that failed and continuous integration servers for regular testing.\\
+        \hline
+        Use GitHub to see look at differences between commits and understand how they altered the behaviour of code. Also use CppCheck to perform a static analysis of C++ code. Most of my development is done in an integrated development environment (IDE) that provides warnings for common errors. I also use tools that can visualize memory usage to spot memory leaks and linting tools to see if methods are deprecated.\\
+        \hline
+        Use tools that do static checks, for example verifying that JSON and XML files are valid. Also use GitHub to do pull requests when reviewing code as well as relying on unit tests and manual testing.\\
+        \hline
+        I do frequent unit testing for the game logic and automatic testing that plays the games to ensure that features work during execution.\\
+        \hline
+        N/A\\
+        \hline
+        I rely on unit testing\\
+        \hline
+        I use the Git merge tool and IDE hints\\
+        \hline
+        Tools within the IDE that highlight potential errors like SonarLint.\\
+        \hline
+    \end{tabular}
+\caption{Responses to question 2}
+\label{table:rq2Table2}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{images/Results/RQ2/RQ2_question_2.png}
+    \caption{Responses for Question 2 categorized}
+    \label{fig:rq2Image2}
+\end{figure}
+
+The four specified categories are \textit{communication tools}, \textit{version control tools}, \textit{automated testing} and \textit{static analysis of code}. 
+
+\subsection{Question 3: Differences Between Clean and Faulty Code}
+
+\textit{What differences do you notice between faulty code and clean code ?}
+
+\begin{table}[H]
+\centering
+    \begin{tabular}{|p{15cm}|}
+        \hline
+        \textbf{Responses}\\ 
+        \hline\hline
+        N/A\\
+        \hline
+        Buggy code tends to be confusing for other developers to understand, its files are too larger and has a lot of dependencies on other files. Also, it's very likely for code to have bugs if there's a lot of nested loops because it makes it more complex for the developer to comprehend\\
+        \hline
+        N/A\\
+        \hline
+        Easy to spot if a certain coding practice has been misused, one example is pointers in C++. It's difficult to tell if the code will function correctly if the function calls become very deep.\\
+        \hline
+        High code complexity such as nested loops and lots of if statements make it hard to understand the code and leads to more bugs.\\
+        \hline
+        Code that is messy such as having nested loops and being hard to understand tends to have more bugs. Sometimes intuition tells us if certain code is written in an improper manner. \\
+        \hline
+        Buggy code tends to have hardcoded values and contains a methods that fail to generalize for all possibilities. \\
+        \hline
+        Code tends to be more buggy when the files are long and when function and variable names are difficult to understand. When code is not easily readable, it becomes harder to debug. Also, buggy code tends to overuse the nesting of loops and if statements.\\
+        \hline
+        If the code is too complex with lots of if else statements and for loops, makes it harder to read and it makes it harder for programmers to spot bugs. \\
+        \hline
+        Buggy code is difficult to understand and is poorly documented or the documentation is out of date. It also has a lot of nested loops or nested if statements.\\
+        \hline
+    \end{tabular}
+\caption{Responses to question 3}
+\label{table:rq2Table3}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{images/Results/RQ2/RQ2_question_3.png}
+    \caption{Responses for Question 3 categorized}
+    \label{fig:rq2Image3}
+\end{figure}
+
+The five categories for this response are \textit{high complexity}, \textit{failing to be modular}, \textit{poor coding standards}, \textit{solutions not general and too specific} and \textit{files too large}. \textit{High complexity} corresponds to code where it is difficult for a developer to understand what the code does. \textit{Poor coding standards} can involve practices such as having little to no comments, 
+
+\subsection{Question 4: Top Causes for Bugs}
+
+\textit{What do you believe are the top causes of bugs ? }
+
+\begin{table}[H]
+\centering
+    \begin{tabular}{|p{15cm}|}
+        \hline
+        \textbf{Responses}\\ 
+        \hline\hline
+        Lack of resources such as time and money causes development to get rushed.\\
+        \hline
+        Files that are too large because it's easier for defects to go unnoticed. Also having code that is poorly organized due to too many dependencies and non modular code.\\
+        \hline
+        Some developers create new code with the assumption that legacy code works properly because it's been given lots of time to fix its bugs. It's also difficult to change legacy code as the fix could lead to more problems than before.\\
+        \hline
+        Tight deadlines which caused work to be rushed and puts pressure on developers. Sometimes developers put a lot of pressure on themselves, especially when trying to get a new feature released before a holiday. Refactoring code can also a cause a lot of bugs because when refactoring, there is a constraint to ensure the changes don't break the current system.\\
+        \hline
+        When you get frequently interrupted when doing a task and forget crucial details about the task you were working on.\\
+        \hline
+        Logical errors that haven't thought of all the possible cases.\\
+        \hline
+        Tight deadlines which causes developers to write quick solutions that work for now but not in the long term. High complexity within code is also a large contributing factor to causing bugs as well as having developers write code for tasks they are inexperienced with.\\
+        \hline
+        When code becomes too complex and it's hard to keep track of everything.\\
+        \hline
+        Temporary solutions that will work for now but not in long term. These solutions fail to generalize and causes technical debt to build up. Also, bugs can arise when files are too long and when code is not modular.\\
+        \hline
+        When there's a lack of frequent testing and when you have incorrect assumptions about the expected behaviour of a new feature.\\
+        \hline
+    \end{tabular}
+\caption{Responses to question 4}
+\label{table:rq2Table4}
+\end{table}
+
+\textit{Poorly organized code} is the category contains causes such as failing to be modular, having poor documentation or having too many dependencies for example. The category \textit{cognitive state of developers} indicates factors such as stress, external pressure to meet deadlines as well as losing focus as causes of bugs. \textit{Temporary solutions} are for responses where the solution fails to work in the long term. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{images/Results/RQ2/RQ2_question_4.png}
+    \caption{Responses for Question 4 categorized}
+    \label{fig:rq2Image4}
+\end{figure}
+
+\section{Research Question 3 Results}\label{section:rq3exp}
+
+The model used in this experiment was a random forest model with 100 estimators. This model trained entirely on historical commits for the C3 project and did not use the self-training algorithm. A total of 27 predictions were sent to developers and the developers confirmed that the true label of these predictions were all \textit{not risky}. 20 commits with a label of \textit{risky} were also found using manual inspection commits within the C3 project. The confusion matrix (see table \ref{tab:confusionMatrix}) highlights the performance of this model. 
+
+\begin{table}[H]
+    \centering
+    \renewcommand\arraystretch{1.5}
+    \setlength\tabcolsep{0pt}
+    \begin{tabular}{c >{}r @{\hspace{0.7em}}c @{\hspace{0.4em}}c @{\hspace{0.7em}}l}
+    \multirow{10}{*}{\parbox{1.1cm}{\bfseries\raggedleft Predicted\\ label}} & 
+    & \multicolumn{2}{c}{\bfseries True label} & \\
+    & & \textit{Risky} & \textit{Not Risky} & \bfseries Total \\
+    & \textit{Risky} & \MyBox{TP = 6}{} & \MyBox{FP = 5}{} & P$'$ = 11 \\[2.4em]
+    & \textit{Not Risky} & \MyBox{FN=14}{} & \MyBox{TN=22}{} & N$'$ = 36\\
+    & \textbf{Total} & P = 20 & N = 27 &
+    \end{tabular}
+    \caption{Confusion matrix for trained classifier making live predictions}
+    \label{tab:confusionMatrix}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|} 
+    \hline
+    \textbf{Metric} & \textbf{Trained Model} & \textbf{Random Model} & \textbf{Cross validation performance}\\ 
+    \hline\hline
+     Accuracy & 0.596 & 0.500 & 0.835 \\
+     Precision & 0.545 & $<$0.545 & 0.639\\
+     Recall & 0.300 & 0.500 & 0.778 \\
+     F1 & 0.387 & $<$0.387 & 0.702\\
+     \hline
+    \end{tabular}
+    \caption{Performance of trained vs random model}
+    \label{table:rq3Perf}
+\end{table}
+
+Table \ref{table:rq3Perf} shows the trained model's performance metrics which are derived from the confusion matrix above. It also shows the performance of a random model as a worst case baseline. Finally, the column \textbf{Cross validation performance} contains the results obtained from the tables \ref{table:exp1_Accuracy}, \ref{table:exp1_Precision}, \ref{table:exp1_Recall} and \ref{table:exp1_F1} for the exact same project and model. There is a large discrepancy between the performance achieved when evaluating with datasets labelled by the approximate SZZ as opposed evaluating on manually labelled commits. The performance of the random model is consistent with the theoretical values obtained in equations \ref{eqn:randAccuracy} to \ref{eqn:randF1}.
+
+
+\end{document}

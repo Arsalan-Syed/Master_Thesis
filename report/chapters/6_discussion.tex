@@ -1,0 +1,139 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Discussion}
+
+\section{Interpreting Results of Conducted Experiments}
+
+\subsection{RQ 1: Practicality of the Self-Training Algorithm}
+
+When performing a broad comparison of the self-training algorithm's performance across various datasets and models (see \ref{subsection:experiment1}), it is evident that the self-training algorithm does not outperform a purely supervised approach. Tables \ref{table:exp1_Accuracy} to \ref{table:exp1_F1} show that in only a minority of cases does self-training outperform the base classifiers. Self-training does provide a boost in performance for K-nearest neighbours, however there is little justification for choosing that algorithm in practice because the tree based methods (random forest, Adaboost and XGBoost) outperform it in all situations. For example in table \ref{table:exp1_Accuracy} for the Postgres dataset, K-nearest neighbours has an accuracy of 69.9\% when using self-training but the tree based methods have at least 73\% accuracy with and without self-training. In this experiment, both the supervised and semi-supervised classifiers had the exact same labelled data. Despite the fact that the semi-supervised model has access to more samples in the form of unlabelled data, the additional data provides no benefit.
+
+\subsubsection{Using Self-training for Reducing Labelled Data}
+
+Despite the previous observation, the self-training algorithm may still be viable depending on how it is utilized. Take figure \ref{fig:rq1exp2accuracy} for example, even as the percentage of labelled data decreases, the accuracy does not vary greatly. This graph seems to indicate that instead of using only labelled samples, one could achieve a similar accuracy if only 10\% of this labelled data is used and complimenting it with unlabelled data. The benefit of this is not requiring to collect as much labelled data which can be time consuming. For example, if the goal was to collect 100,000 labelled samples, one could instead collect 10\% of that labelled amount as well as 90,000 unlabelled instances and only experience a slight decrease in accuracy. One should still be cautious about the chosen size of for the percentage of labelled data. Figure \ref{fig:rq1exp2recall} shows that using 10\% of labelled data can reduce the recall from 0.78 to 0.72. However after the fraction of labelled data is 30\%, the recall of all four classifiers is rather close.
+
+Given that the self-training algorithm is viable for reducing the required labelled data, one would be interested in how it is affected by its parameters. When observing the graphs for accuracy, precision and recall (see figures \ref{fig:rq1exp2accuracy}, \ref{fig:rq1exp2precision} and \ref{fig:rq1exp2recall}), there does not appear to be a clear confidence threshold that is better. The reason for this could be that these thresholds are rather close. A drop in performance may be more noticeable when the threshold is much lower (like 0.5). 
+
+It can be observed in figures \ref{fig:rq1exp2reconstAccuracy} and \ref{fig:rq1exp2reconstAccuracyJDT} that the self-training algorithm was able to take unlabelled data and predict at least 93\% and 82\% of all labels in the respective figures. The first value is relatively high and seems to indicate why the self-training algorithm achieves similar performance to a supervised classifier that uses much more labelled data. The figures also explain why the self-training algorithm does not generally outperform a supervised classifier when using the same amount of labelled data. The total training data that the self-training algorithm would use (labelled and unlabelled) would contain labels that are inaccurate and this could distort the decision boundaries it creates. 
+
+\subsubsection{Effect of Varying Iterations}
+
+When observing how iterations affect the self-training algorithm, it appears that running the algorithm for more iterations does not generally lead to improvements in performance. This can be seen in figures \ref{fig:rq1exp3reconstAccuracyBoth} to \ref{fig:rq1exp3reconstRecallBoth} where there is little change across iterations. This is probably due to the fact that the implementation of the self-training algorithm that was used does not remove unlabelled instances once their predicted label is high enough. Using the algorithm this way can be ideal because the self-training algorithm can be quite time consuming and one can make use of its benefits while only using a few iterations. 
+
+\subsection{RQ 2: Interpreting the Results of the Interviews}
+
+\subsubsection{How Developers Find Bugs}
+
+The first question asked in the interviews can provide some useful insights into the methods that developers use to find bugs. These methods could possibly be incorporated into new models for software defect prediction or other tools for detecting defects. The responses showed that one source of information developers use is logs for particular errors as well as how well a build did with respect to its unit tests. This is a source of information that many JIT defect prediction models lack as their features are solely from commit metadata. Defect prediction models could potentially include metrics from these other sources of information. For example, for each commit one could include information such as if the commit caused a build to fail, the types of error thrown as well as the percentage of code test coverage. Although code test coverage is computed at a file level, one could find all files that a commit touched, compute the coverage for each file and provide the mean value as a feature for the model. 
+
+One common response from the developers was that they manually inspect code by using a debugging tool and setting up breakpoints. Stepping through the code allows one to find investigate if the program is running as expected. However, it can be difficult at times for a developer to know what part of the code to investigate, especially if the software is producing bugs without crashing (see \ref{table:rq2Table1}, row 4). Assuming a software defect prediction model can accurately identify risky commits, their predictions could be used so that a developer would have to spend less time searching for the source of the defect.
+
+\subsubsection{Tools Developers Use to Deal With Bugs}
+
+One standard practice used for mitigating the risk of bugs is using GitHub for frequent code reviews and for merging new feature branches to the master branch. Version control systems are also used for the developer to understand the changes made using the \texttt{diff} command. The two other prominent methods used are tools that can automate unit testing (such as continuous integration servers) as well as tools that perform a static analysis of code when being developed. 
+
+\subsubsection{Static Analysis of Risky Code}
+
+As seen from figure \ref{fig:rq2Image2}, tools that perform a static analysis of code were frequently mentioned in responses. What may be of interest is if it is possible to incorporate the results of these analyses into a defect prediction model. Although it may be theoretically possible to do so, there are some challenges associated with this. First of all, a commit-level defect prediction model requires that each commit includes the same information. This implies that one would have to run these tools for every revision of a project and this would be very intensive on resources. Another issue is how to extract the information of the static analysis with respect to the lines changed by a commit rather than for an entire file or submodule. For example, if a commit changed only the condition in an if-statement, should the static analysis tool consider just that condition or the entire if-clause? 
+
+Instead of including static code analysis into a defect prediction model itself, one use it as a complimentary tool. For example, a defect prediction model could flag risky commits and then automatically run the analysis on files that the commit touched. Some static analysis tools such as linting tools even suggest fixes that would resolve the issue. This would allow one to create an automated system that continuously repairs risky code without developers having to intervene. Typically, software defect prediction models are designed to provide predictions to developers. However, developers may find a prediction such as \textit{risky} or \textit{not risky} as too difficult to interpret because they usually do not highlight what is incorrect within a \textit{risky} commit \cite{nayrolles2018clever}. Developers may also be less tolerant to mistakes made by a defect prediction model as false positives would take up time with no reward. Automated systems on the other hand do not care about how much time they spent analyzing risky commits, especially if there is a large amount of false positives. 
+
+\subsubsection{Clean Code Compared to Risky Code}
+
+When attempting to tell the difference between clean and risky code, a common response among developers was that risky code has a high complexity within the code's structure. This complexity is typically not included in datasets for JIT prediction models. This is because these metrics can only be computed at a method or file level whereas a commit might only change one line within a method. Large files and lots of dependencies on other files are also mentioned as characteristics of risky code. Poor coding standards were another quality of risky code. Bugs occurring due to poor standards are not due to logical errors but due to misuse of standard programming constructs (for example pointers in the C language).
+
+\subsubsection{Top Causes of Bugs}
+
+As seen from the responses in table \ref{table:rq2Table4}, buggy commits tend to occur often when development is being rushed and due to a lack of testing. This motivates the need for having autonomous testing that can flag risky code accurately as it could reduce the time developers need for resolving bugs and instead of have more time to focus on new features. Poorly organized code is also another contributing factor to introducing bugs as making a change in one portion of the codebase could cause another to break. 
+
+\subsection{RQ 3: Analyzing the Performance of the Model in Practice}
+
+The results in table \ref{table:rq3Perf} show that the trained model has increased performance over a random model for accuracy and precision. It also shows that the trained model does not outperform the random model for recall and only has a slightly higher F1 score. However, the main concern is the large discrepancy between the theoretical cross validation performance and the performance seen in practice. The percentage of bugs spotted (recall) is 159\% higher on cross validation than when evaluated in practice. One reason may be due cross validation being insensitive to the temporal order of commits. Cross validation can train on commits that occurred after commits in the test set and this has been shown to exaggerate performance metrics as opposed to a time sensitive evaluation \cite{tan2015online}. Another explanation could be that the labels that the ASZZ algorithm provides could differ greatly from the labels that a developer would suggest when manually labelling the commits. Another possibility is that the model has correctly identified risky commits but it is not apparent to the developer that the commit actually contains a defect. 
+
+An alternative methodology for evaluating the third research question was initially proposed but could not be carried out due to lack of resources. This experiment would involve setting up a case study where a large group of software developers would be recruited and be randomly assigned to a control and a treatment group. The treatment group would have access to a properly trained classifier whereas the control group would be receiving predictions from a random model that simply has a 50\% chance of producing the labels \textit{risky} or \textit{not risky}. The purpose of having a control group would be to investigate the possibility of a placebo effect. There may be a risk that developers have a positive or negative bias towards a trained model and a treatment group could show evidence of this. 
+
+\subsection{Comparing to past results}
+
+Table \ref{table:exp4_F1} shows that the random forest and XGBoost models achieve higher F1 scores than the deep learning model Deeper. However, they do not manage to outperform TLEL which involves stacking multiple random forests. What this may suggest is that models that rely on more ensemble learning techniques would be best for approaching defect prediction. 
+
+\section{General Considerations for Defect Prediction Models}
+
+\subsubsection{Prioritizing Precision or Recall}
+
+When creating software defect prediction models in practice, precision and recall are two metrics that are important to consider because of the imbalance of labels. It is important to understand how much precision and recall is required in order for a defect prediction model to be viable in practice. For some developers, receiving too many false positive could deter them from wanting to use the tool because it takes up too much of their time and would prefer a high precision model. Other developers may want a high recall model so that there is little risk of missing a buggy commit and do not mind spending more time on reviewing their code. Typically, the classification threshold has been set to 0.5 but it should be investigated as to what threshold is most ideal for developers. 
+
+\subsubsection{Binary Labelling}
+
+This report as well as past research has formulated the problem of identifying risky commits as a binary classification problem. Although software developers may be able to identify multiple risk levels for implemented features (such as high, medium, low, none), only two labels are used in our defect prediction datasets. One may ask as to why numerical values are not used as opposed to categorical values. The use of integers or real values for a commit's risk level is generally avoided because it is difficult to objectively define. Integers could be used when measuring the number of bugs caused and be normalized to a value between 0 and 1. However, if two commits have the same number of bugs caused, this does not necessarily mean that both have the same level of risk. For example, one commit could cause a bug that causes an application to fail whereas another commit only forgets to refresh the user interface with new data in that same application. Both of these bugs would not be considered to have the same risk level but it would be difficult to distinguish this with a numerical value. Instead, one could use multiple categorical labels such that a partial order over these labels exists. However, even if one could define multiple labels like \textit{high, medium, low}, the challenge would be  to label our datasets in such a way. The SZZ algorithm would not be applicable because it cannot determine the how risky a change is, only if the change resulted in a bug or not. Therefore we resort to only using two labels instead of multiple. 
+
+\section{Ethical Concerns}
+
+\subsubsection{Discrimination Against Developers}
+
+One feature that could have been included in the defect prediction model was the developer that was responsible for writing a commit. This information is readily available within Git commits and one could see how developers produce risky commits across various projects. However, this provides the opportunity for particular developers to be discriminated against when being considered for new projects or responsibilities within an organization. Some organizations may even use it as an indicator of a developer's performance and in the worst case, be used to justify a layoff. Even if the author of a commit is not included in the model, anyone observing the prediction would know that a risky commit was created by a certain individual. This is one reason why it may be best for only the author of the commit to see the prediction. Also, the prediction model does not take into account the fact that not all projects are made equally. For example, a very high quality developer may take on more challenging projects and thus create bugs more often because of the nature of their work but that does not imply that they have poor performance. 
+
+\subsubsection{De-anonymising Datasets}
+
+Another concern is when creating datasets for software defect prediction models that may be available publicly. Although one could anonymise each developer by replacing their name with a hash value, it could still be possible to identify the author of a given commit. One related example where de-anonymization has been achieved is with the Netflix challenge. This challenge involved designing recommender systems to recommend movies based on past ratings. The dataset for this challenged contained real ratings from users, however their usernames were anonymised \cite{naranyanan2008robust}. The issue arose when it was discovered that one could cross reference the ratings in the Netflix dataset with a public dataset such as IMDB. Although the de-anonymization of movie ratings may not necessarily pose a large threat to users, this example shows that the technique can be exploited because of additional public information. So in the context of our datasets, one could use information such as the project worked on, the time of the commit and other features to deduce the original author of a commit.
+
+\subsubsection{Handling commercial datasets}
+
+For commercial datasets, even more care must be taken when presenting various statistics. For example in tables \ref{table:exp1_Precision} and \ref{table:exp1_F1}, the performance of the random classifier can reveal the percentage of risky commits within a project. When referring to equation \ref{eqn:randPrecision}, the precision of a random model directly reveals this value. For the F1 score, one could rearrange equation \ref{eqn:randF1} and use the value of a random model's recall to retrieve the rate of buggy commits. Even if the information does not accurately represent the true rate of buggy commits (due to false positive introduced by SZZ), future documents presenting this information might use it without context. Therefore anonymising this data is important in order to avoid any potential harm to a company partaking in these studies as well as to establish trust in future collaborations between academia and the industry.
+
+\section{Threats to Validity}
+
+\subsection{Limitations of the SZZ Algorithm}
+
+The ability of a defect prediction model to identify risky commits depends heavily on the correctness of the labels provided by the SZZ algorithm. A limitation with the SZZ algorithm is that it is not exhaustive i.e. there is there is no formal guarantee that it will identify all bugs in a version control system. This is because the bugs it discovers depend upon the initial bug-fixing commits that were identified. If a developer fails to report these bug-fixing commits in a bug tracking database or if their commit messages do not contain the necessary keywords, SZZ will not regard these commits as bug-fixing. Therefore any commits containing a bug that would have been linked to this bug-fixing commit are not added to the final set. 
+
+Another issue with the algorithm is that it produces false positives because it does not understand the different types of changes that can be made within a commit. For example, if a commit includes a comment, the algorithm would consider this commit as a bug given that a bug-fixing commit removes the comment or moves it somewhere else. Even if a comment had incorrect information that could indirectly cause a programmer to write faulty code, it still does not constitute as a bug as it does not directly affect the program's execution. The same problem applies when making refactoring changes to a program such as renaming methods. To make the model aware of the type of change, one would have to parse the source code when running the SZZ algorithm to ensure that a change to the source code actually causes a different execution of the program.
+
+\subsection{Observed Performance in Case Study}
+
+When evaluating the performance of a trained model in practice as seen in section \ref{section:rq3exp}, one risk is that the number of commits for the evaluation was too few. The true observed performance could have become much higher or lower if given many more commits to evaluate on. Additionally, the case study was only done over a period of two weeks and these two weeks could have been a less busy period for the developers where less bugs were produced. Obtaining more commits to predict on is necessary but can be challenging if developers are reluctant to manually label the commits once they receive a prediction. 
+
+Another threat to validity is the fact that \textit{risky} and \textit{not risky} commits were not obtained using the exact same methods. When obtaining new commits to predict on for the experiments, only non risky commits occurred according to the developers evaluation of each commit. Therefore some risky commits had to be obtained manually by following the steps of the SZZ algorithm and using sound judgment to determine if the change was actually fixing a bug. Finally, the performance of the model could be lower due to the fact that the ASZZ algorithm was used and there is a risk that it generates more false positives in its labelling as opposed to the vanilla SZZ algorithm.
+
+\subsection{Differences in Results due to Randomness}
+
+When comparing current results to previous works, one risk is that the training and test sets used are not identical. Cross validation involves randomly partitioning a dataset and unless the seed use for performing that partition is provided, one must trust that cross validation is providing an accurate description of performance in general. 
+
+\section{Conclusions}
+
+In this work, the performance of classifiers that used the self-training algorithm was explored. It was found that that the self-training algorithm does not have an improved performance over a corresponding supervised model. It does however have the ability to achieve similar performance while using a smaller number of samples for training. 
+
+In order to grasp a better understanding of how developers at King identified and dealt with bugs, ten interviews were conducted. The interviews provide some responses that could be of interest for researchers experimenting with defect prediction models as well as anyone who is interested in identifying and resolving bugs. The interviews found that developers tend to identify bugs through inspecting logs, relying on frequent unit testing, manually inspecting code as well as communicating with other team members. The types of tools used are typically static analysis tools, version control tools such as Git as well as tools that automate testing. According to developers, risky code tends to be difficult to read and comprehend, has too many dependencies on other code and does not follow proper coding practices. The top causes of bugs are suggested to be a lack of time and resources, incorrect assumption on how code was meant to function as well as code being poorly organized. 
+
+Finally, a tool was created and deployed at King in order to evaluate the performance of a defect prediction model when its predictions are sent and reviewed by software developers. Although this model could achieve higher accuracy and precision than a random model, there is still a large discrepancy between the cross validation performance and its performance when evaluated by developers.
+
+\section{Future Work}
+
+This section suggests potential topics that could be explored in the future for the field of software defect prediction. 
+
+\subsubsection{Case studies}
+
+Some more emphasis could be put on evaluating defect prediction models in practice as it is important to understand if these models have a clear benefit for developers. It needs to be understood if it is sufficient for developers to simply know if a commit is risky or if they need exact suggestions for what the commit has done wrong.
+
+\subsubsection{Machine learning}
+
+New features for defect prediction models could be incorporated using information from sources other than GitHub such as the build status or success rate of tests. A challenge would be to optimize the collection of this data so that it can be available for every commit. One could also delve deeper into semi-supervised learning techniques. Although the self-training algorithm does not lead to improvements in performance, its utility is in the fact that it reduces the need for labelled data. One could investigate more complex techniques such as generative models or SV3M. 
+
+\subsubsection{ASZZ vs SZZ}
+
+A major benefit of the ASZZ algorithm is the fact that it can be used for any project that is structured using Git. However, if the algorithm degrades the quality of data too much, it may not be viable in practice one would be limited to defect prediction models for projects with a bug tracking database. It is worth investigating the limitations of this algorithm, possibly through evaluating its performance on a manually verified dataset. 
+
+\end{document}
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
